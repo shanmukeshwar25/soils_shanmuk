@@ -21,17 +21,17 @@ def startup_event():
 
 
 @app.get("/filters")
-def get_filters():
+def get_filters(categories: Optional[str] = Query(None, description="Comma separated categories filter")):
     try:
-        return data_processing.get_filters()
+        return data_processing.get_filters(categories)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/companies")
-def get_companies():
+def get_companies(categories: Optional[str] = Query(None, description="Comma separated categories filter")):
     try:
-        return data_processing.get_companies()
+        return data_processing.get_companies(categories)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -39,9 +39,10 @@ def get_companies():
 @app.get("/areas")
 def get_areas(
     company: Optional[str] = Query(None, description="Company ID to scope areas"),
+    categories: Optional[str] = Query(None, description="Comma separated categories filter"),
 ):
     try:
-        return data_processing.get_areas(company)
+        return data_processing.get_areas(company, categories)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

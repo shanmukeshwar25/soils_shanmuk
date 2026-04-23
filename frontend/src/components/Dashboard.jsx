@@ -286,7 +286,7 @@ function CategoryBlock({ categoryName, categoryType = 'mixed', categoryData = []
   // Auto-select top parameters when category loads
   useEffect(() => {
     if (selectedMeasures.size === 0 && sortedSummaryData.length > 0) {
-      setSelectedMeasures(new Set(sortedSummaryData.slice(0, 6).map(s => s.measure)));
+      setSelectedMeasures(new Set(sortedSummaryData.slice(0, 2).map(s => s.measure)));
     }
   }, [sortedSummaryData, selectedMeasures.size]);
 
@@ -869,28 +869,34 @@ export default function Dashboard() {
   useEffect(() => { document.documentElement.classList.toggle('dark', isDark); }, [isDark]);
 
   useEffect(() => {
-    getFilters().then(data => {
+    const catQuery = selectedCategories.join(',');
+    
+    getFilters(catQuery).then(data => {
       setFilters(data);
-      if (data.crops.length) setSelectedCrop(data.crops[0]);
-      if (data.soil_types.length) setSelectedSoil(data.soil_types[0]);
+      setSelectedCrop(prev => data.crops.includes(prev) ? prev : (data.crops[0] || ''));
+      setSelectedSoil(prev => data.soil_types.includes(prev) ? prev : (data.soil_types[0] || ''));
     }).catch(console.error);
 
-    getCompanies().then(comps => {
+    getCompanies(catQuery).then(comps => {
       setCompanies(comps);
+      setSelectedCompany(prev => comps.includes(prev) ? prev : 'All Companies');
     }).catch(console.error);
+  }, [selectedCategories]);
 
+  useEffect(() => {
     getAllCategories().then(data => {
       setAllCategories(data.categories || []);
     }).catch(console.error);
   }, []);
 
-  // Reload areas whenever the selected company changes
+  // Reload areas whenever the selected company or categories change
   useEffect(() => {
-    setSelectedArea('All Areas');
-    getAreas(selectedCompany).then(areaList => {
+    const catQuery = selectedCategories.join(',');
+    getAreas(selectedCompany, catQuery).then(areaList => {
       setAreas(areaList);
+      setSelectedArea(prev => areaList.includes(prev) ? prev : 'All Areas');
     }).catch(() => setAreas(['All Areas']));
-  }, [selectedCompany]);
+  }, [selectedCompany, selectedCategories]);
 
   useEffect(() => {
     if (!selectedCrop || !selectedSoil || selectedCategories.length === 0) {

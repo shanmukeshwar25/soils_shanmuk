@@ -210,8 +210,11 @@ def get_data() -> pd.DataFrame:
     return _cleaned_data
 
 
-def get_filters():
+def get_filters(categories: str = None):
     df = get_data()
+    if categories and categories != 'All':
+        cats_list = [c.strip() for c in categories.split(',')]
+        df = df[df['Category'].isin(cats_list)]
     return {
         "crops": ["All Crops"] + sorted(df['Crop'].replace('Unknown', pd.NA).dropna().unique().tolist()),
         "soil_types": ["All Soils"] + sorted(df['SoilType'].replace('Unknown', pd.NA).dropna().unique().tolist()),
@@ -219,18 +222,24 @@ def get_filters():
     }
 
 
-def get_companies():
+def get_companies(categories: str = None):
     """Returns all distinct CompanyIds sorted numerically."""
     df = get_data()
+    if categories and categories != 'All':
+        cats_list = [c.strip() for c in categories.split(',')]
+        df = df[df['Category'].isin(cats_list)]
     ids = sorted(df['CompanyId'].dropna().astype(int).unique().tolist())
     return {
         "companies": ["All Companies"] + [str(i) for i in ids]
     }
 
 
-def get_areas(company: str = None):
+def get_areas(company: str = None, categories: str = None):
     """Returns all distinct AreaIds for the given company (or all if no company given)."""
     df = get_data()
+    if categories and categories != 'All':
+        cats_list = [c.strip() for c in categories.split(',')]
+        df = df[df['Category'].isin(cats_list)]
     sub = _apply_company_filter(df, company)
     ids = sorted(sub['AreaId'].dropna().astype(int).unique().tolist())
     return {
