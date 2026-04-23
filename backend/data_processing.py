@@ -6,7 +6,8 @@ import re
 
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DATA_PATH = os.path.join(BASE_DIR, "analysis_data_09-04-2026_2(in).csv")
+
+DATA_PATH = os.getenv("DATA_PATH")
 
 # Mapping of measures to correct units when they are missing from the dataset
 UNIT_MAPPING = {
