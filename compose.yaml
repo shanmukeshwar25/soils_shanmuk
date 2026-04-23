@@ -17,4 +17,4 @@ services:
     volumes:
       - ./:/app_host
     environment:
-      - DATA_PATH=/app_host/analysis_data_09-04-2026_2(in).csv
+      - DATA_PATH=/app/analysis_data_09-04-2026_2(in).csv
